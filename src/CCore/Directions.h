@@ -1,0 +1,15 @@
+//
+// Created by jord on 4-10-16.
+//
+
+#ifndef INFORMATICA_OLYMPIADE_2016_2017_TESTS_DIRECTION_H
+#define INFORMATICA_OLYMPIADE_2016_2017_TESTS_DIRECTION_H
+
+enum class Direction {
+    UP,
+    RIGHT,
+    DOWN ,
+    LEFT
+};
+
+#endif //INFORMATICA_OLYMPIADE_2016_2017_TESTS_DIRECTION_H
