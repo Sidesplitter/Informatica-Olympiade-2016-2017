@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 
 # Adds HUMAN_MESSAGES to the preprocessor
 # Since the subbmitted version is just a plain .cpp file, this will be disabled by default. If you want to see what

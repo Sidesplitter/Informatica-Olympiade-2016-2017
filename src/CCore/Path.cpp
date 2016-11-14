@@ -5,7 +5,7 @@ void Path::calculatePath(std::tuple<Point, Point> searchArea, bool squareOptimiz
                          int minimalLength, int maximumPoints) {
 
     // The starting point is not a gaussian prime, we can stop already
-    if(!this->primalityTester.isGaussianPrime(this->startingPoint))
+    if(!this->primalityTester->isGaussianPrime(this->startingPoint))
     {
         return;
     }
@@ -37,7 +37,7 @@ void Path::calculatePath(std::tuple<Point, Point> searchArea, bool squareOptimiz
             break;
         }
 
-        if (this->primalityTester.isGaussianPrime(point)) {
+        if (this->primalityTester->isGaussianPrime(point)) {
 
             // Add the point to the list of points
             points.push_back(point);
@@ -51,6 +51,11 @@ void Path::calculatePath(std::tuple<Point, Point> searchArea, bool squareOptimiz
                 // and when the first two points have the same length as the second and the third point
                 if (points.size() == 5) {
                     this->square = points[0].getDistance(points[1]) == points[1].getDistance(points[2]);
+
+                    if(this->square)
+                    {
+                        this->sideLength = this->getLength() / 4;
+                    }
                 }
 
                 break;
@@ -70,13 +75,13 @@ void Path::calculatePath(std::tuple<Point, Point> searchArea, bool squareOptimiz
                     }
 
                     // Check if the third point (upper right) is a gaussian prime
-                    if(!this->primalityTester.isGaussianPrime(point.translate(Direction::UP, sideLength)))
+                    if(!this->primalityTester->isGaussianPrime(point.translate(Direction::UP, sideLength)))
                     {
                         break;
                     }
 
                     // Check if the fourth point (upper left) is a gaussian prime
-                    if(!this->primalityTester.isGaussianPrime(startingPoint.translate(Direction::UP, sideLength)))
+                    if(!this->primalityTester->isGaussianPrime(startingPoint.translate(Direction::UP, sideLength)))
                     {
                         break;
                     }
@@ -135,12 +140,12 @@ void Path::setStartingPoint(const Point &startingPoint) {
     Path::startingPoint = startingPoint;
 }
 
-const PrimalityTester &Path::getPrimalityTester() const {
+PrimalityTester * Path::getPrimalityTester() const {
     return this->primalityTester;
 }
 
-void Path::setPrimalityTester(const PrimalityTester &primalityTester) {
-    this->primalityTester = primalityTester;
+void Path::setPrimalityTester(PrimalityTester &primalityTester) {
+    this->primalityTester = &primalityTester;
 }
 
 bool Path::isLoop() const {
@@ -155,10 +160,33 @@ int Path::getLength() const {
     return length;
 }
 
-Path::Path(const Point &startingPoint, const PrimalityTester &cCore) : startingPoint(startingPoint), primalityTester(primalityTester) {
+Path::Path(const Point &startingPoint, PrimalityTester *primalityTester) : startingPoint(startingPoint), primalityTester(primalityTester) {
 
     this->startingPoint = startingPoint;
     this->primalityTester = primalityTester;
 }
 
 Path::Path() {}
+
+const bool Path::operator<(const Path &path) const {
+
+    // We are larger
+    if(path.length < this->length)
+    {
+        return false;
+    }
+
+    // We are of the same length
+    if(path.length == this->length)
+    {
+        Point origin = Point(0, 0);
+
+        return path.getStartingPoint().getDistance(origin) < this->getStartingPoint().getDistance(origin);
+    }
+
+    return true;
+}
+
+int Path::getSideLength() const {
+    return sideLength;
+}

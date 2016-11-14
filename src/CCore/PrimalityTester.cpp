@@ -3,12 +3,16 @@
 
 bool PrimalityTester::isPrime(uint32_t number, PrimalityMethod primalityMethod) {
 
-    std::map<uint32_t, bool>::iterator cache = this->primeCache.find(number);
+    if(this->cache) {
+        {
+            std::unique_lock<std::mutex> lock(this->primeCacheMutex);
+            std::map<uint32_t, bool>::iterator cache = this->primeCache.find(number);
 
-    //The prime is already in the prime cache, just return that value
-    if(cache != this->primeCache.end())
-    {
-        return cache->second;
+            //The prime is already in the prime cache, just return that value
+            if (cache != this->primeCache.end()) {
+                return cache->second;
+            }
+        }
     }
 
     // Special cases
@@ -50,7 +54,13 @@ bool PrimalityTester::isPrime(uint32_t number, PrimalityMethod primalityMethod) 
             throw std::invalid_argument("Unknown primality method");
     }
 
-    this->primeCache[number] = isPrime;
+
+    if(this->cache) {
+        {
+            std::unique_lock<std::mutex> lock(this->primeCacheMutex);
+            this->primeCache[number] = isPrime;
+        }
+    }
 
     return isPrime;
 }
@@ -222,4 +232,14 @@ const bool PrimalityTester::isFermatPrime(const uint32_t number) const
 
 bool PrimalityTester::isGaussianPrime(const Point point, PrimalityTester::PrimalityMethod primalityMethod) {
     return this->isGaussianPrime(point.getX(), point.getY(), primalityMethod);
+}
+
+PrimalityTester::PrimalityTester() {}
+
+bool PrimalityTester::isUsingCache() const {
+    return cache;
+}
+
+void PrimalityTester::useCache(bool cache) {
+    PrimalityTester::cache = cache;
 }

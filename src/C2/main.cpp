@@ -27,7 +27,7 @@ int main() {
 
     Point startingPoint = Point(x, y);
 
-    Path path = Path(startingPoint, PrimalityTester());
+    Path path = Path(startingPoint, new PrimalityTester());
 
     path.calculatePath(std::make_tuple(point1, point2));
 

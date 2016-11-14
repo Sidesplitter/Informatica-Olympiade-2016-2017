@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include <mutex>
 #include "Point.h"
 
 class PrimalityTester {
@@ -13,7 +14,18 @@ private:
      */
     std::map<uint32_t, bool> primeCache;
 
+    /**
+     * The Mutex thta is used for the prime cache
+     */
+    std::mutex primeCacheMutex;
+
+    /**
+     * True when a cache should be used, false if not.
+     */
+    bool cache = false;
+
 public:
+    PrimalityTester();
 
     enum PrimalityMethod { FERMAT, MILLER_RABIN};
 
@@ -72,6 +84,10 @@ public:
      * @return True if the number is a prime, false if it is not.
      */
     const bool isFermatPrime(const uint32_t number) const;
+
+    bool isUsingCache() const;
+
+    void useCache(bool cache);
 };
 
 
