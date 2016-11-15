@@ -12,15 +12,16 @@ float runBasicPrimes(PrimalityTester::PrimalityMethod primalityMethod, bool cach
 {
     PrimalityTester *primalityTester = new PrimalityTester();
     primalityTester->useCache(cache);
+    primalityTester->setPrimalityMethod(primalityMethod);
 
     std::time_t start = std::time(nullptr);
 
     for(int i = 0; i < 5000000; i++) {
-        primalityTester->isPrime((uint32_t) i, primalityMethod);
+        primalityTester->isPrime((uint32_t) i);
     }
 
     for(int i = 0; i < 5000000; i++) {
-        primalityTester->isPrime((uint32_t) i, primalityMethod);
+        primalityTester->isPrime((uint32_t) i);
     }
 
     return time(nullptr) - start;
@@ -36,13 +37,14 @@ float runBasicGaussianPrimes(PrimalityTester::PrimalityMethod primalityMethod, b
     CCore cCore = CCore();
     cCore.setThreads(threads);
     cCore.getPrimalityTester()->useCache(cache);
+    cCore.getPrimalityTester()->setPrimalityMethod(primalityMethod);
 
     std::time_t start = time(nullptr);
 
     cCore.getGaussianPrimes(std::make_tuple(
             Point(0, 0),
             Point(3000, 3000)
-    ), primalityMethod);
+    ));
 
    return time(nullptr) - start;
 }
@@ -52,13 +54,14 @@ float runSquares(PrimalityTester::PrimalityMethod primalityMethod, bool cache, i
     CCore cCore = CCore();
     cCore.setThreads(threads);
     cCore.getPrimalityTester()->useCache(cache);
+    cCore.getPrimalityTester()->setPrimalityMethod(primalityMethod);
 
     std::time_t start = time(nullptr);
 
     cCore.getSquares(std::make_tuple(
             Point(0, 0),
             Point(3000, 3000)
-    ), primalityMethod);
+    ));
 
     return time(nullptr) - start;
 }
@@ -68,13 +71,14 @@ float runLargestSquare(PrimalityTester::PrimalityMethod primalityMethod, bool ca
     CCore cCore = CCore();
     cCore.setThreads(threads);
     cCore.getPrimalityTester()->useCache(cache);
+    cCore.getPrimalityTester()->setPrimalityMethod(primalityMethod);
 
     std::time_t start = time(nullptr);
 
     cCore.getLargestSquare(std::make_tuple(
             Point(0, 0),
             Point(3000, 3000)
-    ), primalityMethod);
+    ));
 
     return time(nullptr) - start;
 }

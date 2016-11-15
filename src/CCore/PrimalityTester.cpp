@@ -1,7 +1,7 @@
 #include <random>
 #include "PrimalityTester.h"
 
-bool PrimalityTester::isPrime(uint32_t number, PrimalityMethod primalityMethod) {
+bool PrimalityTester::isPrime(uint32_t number) {
 
     if(this->cache) {
         {
@@ -41,7 +41,7 @@ bool PrimalityTester::isPrime(uint32_t number, PrimalityMethod primalityMethod) 
 
     bool isPrime;
 
-    switch(primalityMethod)
+    switch(this->getPrimalityMethod())
     {
         case FERMAT:
             isPrime = this->isMillerRabinPrime(number);
@@ -169,7 +169,7 @@ const bool PrimalityTester::isMillerRabinPrime(const uint32_t number, const int 
 
 }
 
-bool PrimalityTester::isGaussianPrime(int x, int y, PrimalityMethod primalityMethod) {
+bool PrimalityTester::isGaussianPrime(int x, int y) {
 
     if(x == 0)
     {
@@ -178,7 +178,7 @@ bool PrimalityTester::isGaussianPrime(int x, int y, PrimalityMethod primalityMet
             return false;
         }
 
-        return this->isPrime((uint32_t) y, primalityMethod);
+        return this->isPrime((uint32_t) y);
     }
 
     if(y == 0)
@@ -188,7 +188,7 @@ bool PrimalityTester::isGaussianPrime(int x, int y, PrimalityMethod primalityMet
             return false;
         }
 
-        return this->isPrime((uint32_t) x, primalityMethod);
+        return this->isPrime((uint32_t) x);
     }
 
     int xEven = !(x & 1);
@@ -212,7 +212,7 @@ bool PrimalityTester::isGaussianPrime(int x, int y, PrimalityMethod primalityMet
     uint32_t xSquared = (uint32_t) (x * x);
     uint32_t ySquared = (uint32_t) (y * y);
 
-    return this->isPrime(xSquared + ySquared, primalityMethod);
+    return this->isPrime(xSquared + ySquared);
 }
 
 const bool PrimalityTester::isFermatPrime(const uint32_t number) const
@@ -230,8 +230,8 @@ const bool PrimalityTester::isFermatPrime(const uint32_t number) const
     return pow_mod(2, number - 1, number) == 1;
 }
 
-bool PrimalityTester::isGaussianPrime(const Point point, PrimalityTester::PrimalityMethod primalityMethod) {
-    return this->isGaussianPrime(point.getX(), point.getY(), primalityMethod);
+bool PrimalityTester::isGaussianPrime(const Point point) {
+    return this->isGaussianPrime(point.getX(), point.getY());
 }
 
 PrimalityTester::PrimalityTester() {}
@@ -242,4 +242,12 @@ bool PrimalityTester::isUsingCache() const {
 
 void PrimalityTester::useCache(bool cache) {
     PrimalityTester::cache = cache;
+}
+
+PrimalityTester::PrimalityMethod PrimalityTester::getPrimalityMethod() const {
+    return primalityMethod;
+}
+
+void PrimalityTester::setPrimalityMethod(PrimalityTester::PrimalityMethod primalityMethod) {
+    PrimalityTester::primalityMethod = primalityMethod;
 }

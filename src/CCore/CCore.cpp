@@ -4,7 +4,7 @@
 #include "CCore.h"
 
 
-const std::vector<Point> CCore::getGaussianPrimes(const std::tuple<Point, Point> searchArea, PrimalityTester::PrimalityMethod primalityMethod){
+const std::vector<Point> CCore::getGaussianPrimes(const std::tuple<Point, Point> searchArea){
 
 
     std::vector<std::future<std::vector<Point>>> futures;
@@ -26,8 +26,7 @@ const std::vector<Point> CCore::getGaussianPrimes(const std::tuple<Point, Point>
                         &CCore::getGaussianPrimesChunk,
                         this,
                         range,
-                        searchArea,
-                        primalityMethod
+                        searchArea
                 ))
         );
     }
@@ -45,7 +44,7 @@ const std::vector<Point> CCore::getGaussianPrimes(const std::tuple<Point, Point>
     return points;
 }
 
-const std::vector<Path> CCore::getSquares(const std::tuple<Point, Point> searchArea, PrimalityTester::PrimalityMethod primalityMethod) {
+const std::vector<Path> CCore::getSquares(const std::tuple<Point, Point> searchArea) {
 
     std::vector<Path> squares = {};
 
@@ -64,8 +63,7 @@ const std::vector<Path> CCore::getSquares(const std::tuple<Point, Point> searchA
                         &CCore::getSquareChunk,
                         this,
                         range,
-                        searchArea,
-                        primalityMethod
+                        searchArea
                 ))
         );
     }
@@ -80,7 +78,7 @@ const std::vector<Path> CCore::getSquares(const std::tuple<Point, Point> searchA
     return squares;
 }
 
-const Path CCore::getLargestSquare(const std::tuple<Point, Point> searchArea, PrimalityTester::PrimalityMethod primalityMethod) {
+const Path CCore::getLargestSquare(const std::tuple<Point, Point> searchArea) {
 
     Path largestSquare = Path();
 
@@ -99,8 +97,7 @@ const Path CCore::getLargestSquare(const std::tuple<Point, Point> searchArea, Pr
                         &CCore::getLargestSquareChunk,
                         this,
                         range,
-                        searchArea,
-                        primalityMethod
+                        searchArea
                 ))
         );
     }
@@ -123,9 +120,9 @@ void CCore::setPrimalityTester(PrimalityTester *primalityTester) {
     CCore::primalityTester = primalityTester;
 }
 
-const bool CCore::isPrime(const uint32_t number, PrimalityTester::PrimalityMethod primalityMethod) {
+const bool CCore::isPrime(const uint32_t number) {
 
-    return this->primalityTester->isPrime(number, primalityMethod);
+    return this->primalityTester->isPrime(number);
 }
 
 CCore::CCore() {
@@ -133,15 +130,14 @@ CCore::CCore() {
 }
 
 std::vector<Point> CCore::getGaussianPrimesChunk(std::tuple<int, int> range,
-                                   std::tuple<Point, Point> searchArea,
-                                   PrimalityTester::PrimalityMethod primalityMethod) {
+                                   std::tuple<Point, Point> searchArea) {
 
     std::vector<Point> points;
 
     for(int y = std::get<0>(range); y < std::get<1>(range); y++)
     {
          for (int x = std::get<0>(searchArea).getX(); x < std::get<1>(searchArea).getX(); x++) {
-             if (!this->primalityTester->isGaussianPrime(x, y, primalityMethod)) {
+             if (!this->primalityTester->isGaussianPrime(x, y)) {
                  continue;
              }
 
@@ -152,10 +148,9 @@ std::vector<Point> CCore::getGaussianPrimesChunk(std::tuple<int, int> range,
     return points;
 }
 
-std::vector<Path> CCore::getSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searchArea,
-                                        PrimalityTester::PrimalityMethod primalityMethod) {
+std::vector<Path> CCore::getSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searchArea) {
 
-    std::vector<Point> primes = this->getGaussianPrimesChunk(range, searchArea, primalityMethod);
+    std::vector<Point> primes = this->getGaussianPrimesChunk(range, searchArea);
 
     std::vector<Path> squares = {};
 
@@ -176,9 +171,9 @@ std::vector<Path> CCore::getSquareChunk(std::tuple<int, int> range, std::tuple<P
     return squares;
 }
 
-Path CCore::getLargestSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searchArea,
-                                               PrimalityTester::PrimalityMethod primalityMethod) {
-    std::vector<Point> primes = this->getGaussianPrimesChunk(range, searchArea, primalityMethod);
+Path CCore::getLargestSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searchArea) {
+
+    std::vector<Point> primes = this->getGaussianPrimesChunk(range, searchArea);
 
     Path largestSquare = Path();
     

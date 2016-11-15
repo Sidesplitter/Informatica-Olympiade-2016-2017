@@ -25,19 +25,25 @@ private:
     bool cache = false;
 
 public:
-    PrimalityTester();
-
     enum PrimalityMethod { FERMAT, MILLER_RABIN};
+
+private:
+    /**
+     * The primality method that is used for calculations
+     */
+    PrimalityMethod primalityMethod = MILLER_RABIN;
+
+public:
+    PrimalityTester();
 
     /**
      * Checks if the given number is a check using the given method. This method contains some optimization and caching
      * and is faster than calling isMillerRabinPrime or isFermaPrime directly.
      *
      * @param number The number to check for primality
-     * @param primalityMethod The primality method to use, defaults to Miller Rabin
      * @return True if the number is a prime, false if not
      */
-    bool isPrime(uint32_t number, PrimalityMethod primalityMethod = MILLER_RABIN);
+    bool isPrime(uint32_t number);
 
     /**
      * Checks if the given numbers are a gaussian prime.
@@ -47,10 +53,9 @@ public:
      *
      * @param x The first number to check
      * @param y The second number to check
-     * @param primalityMethod The primality method to use, defaults to Miller Rabin
      * @return True if the two numbers together are a gaussian prime, false if not.
      */
-    bool isGaussianPrime(int x, int y, PrimalityMethod primalityMethod = MILLER_RABIN);
+    bool isGaussianPrime(int x, int y);
 
     /**
      * Checks if the given numbers are a gaussian prime.
@@ -59,10 +64,9 @@ public:
      * @see https://en.wikipedia.org/wiki/Gaussian_integer
      *
      * @param point The point to check
-     * @param primalityMethod The primality method to use, defaults to Miller Rabin
      * @return True if the point is a gaussian prime, false if not
      */
-    bool isGaussianPrime(const Point point, PrimalityMethod primalityMethod = MILLER_RABIN);
+    bool isGaussianPrime(const Point point);
 
     /**
      * Check if the number is a prime according to the Miller Rabin primality test. This method is more accurate
@@ -88,6 +92,10 @@ public:
     bool isUsingCache() const;
 
     void useCache(bool cache);
+
+    PrimalityMethod getPrimalityMethod() const;
+
+    void setPrimalityMethod(PrimalityMethod primalityMethod);
 };
 
 
