@@ -130,13 +130,9 @@ const bool PrimalityTester::isMillerRabinPrime(const uint32_t number, const int 
         s++;
     }
 
-    std::random_device randomDevice;
-    std::mt19937 generator(randomDevice());
-    std::uniform_int_distribution<> distribution(2, number - 2);
-
     for(int i = 0; i < precision; i++)
     {
-        int a = distribution(generator);
+        int a = rand() % (number - 2) + 2;
 
         uint64_t x = pow_mod((uint64_t) a, (uint64_t) d, (uint64_t) number);
 
