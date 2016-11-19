@@ -12,6 +12,7 @@ private:
 
 public:
     Point(const int x, const int y);
+
     Point(const int x, const int y, Direction direction);
 
     Point();
@@ -26,9 +27,11 @@ public:
     const Point translate(const Direction direction, const int length = 1);
 
     const int getX() const;
+
     const int getY() const;
 
     const bool operator==(const Point &other) const;
+
     const bool operator!=(const Point &other) const;
 
     const Direction getDirection() const;

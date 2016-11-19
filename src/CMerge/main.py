@@ -25,6 +25,8 @@ def get_ccore():
         'PrimalityTester.cpp',
         'Path.h',
         'Path.cpp',
+        'Progress.h',
+        'Progress.cpp',
         'CCore.h',
         'CCore.cpp'
     ]

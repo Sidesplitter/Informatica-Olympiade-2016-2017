@@ -31,16 +31,14 @@ int main() {
     CCore cCore = CCore();
 
     //Check if they are prime
-    for(int i = 0; i < 10; i++)
-    {
+    for (int i = 0; i < 10; i++) {
 
 #ifdef HUMAN_MESSAGES
-    printf("Number %d (%d, %d): ", i + 1, numbers[i].getX(), numbers[i].getY());
+        printf("Number %d (%d, %d): ", i + 1, numbers[i].getX(), numbers[i].getY());
 #endif
-        if(cCore.getPrimalityTester()->isGaussianPrime(numbers[i]))
-        {
+        if (cCore.getPrimalityTester()->isGaussianPrime(numbers[i])) {
             std::cout << "ja" << std::endl;
-        }else{
+        } else {
             std::cout << "nee" << std::endl;
         }
     }

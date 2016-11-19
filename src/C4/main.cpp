@@ -18,10 +18,15 @@ int main() {
 
     CCore cCore = CCore();
 
-    Path square = cCore.getLargestSquare(std::make_tuple(point1, point2));
+    Progress *progress = nullptr;
+#ifdef HUMAN_MESSAGES
+    progress = new Progress();
+#endif
+
+    Path square = cCore.getLargestSquare(std::make_tuple(point1, point2), progress);
 
 #ifdef HUMAN_MESSAGES
-    printf("The largest square was found at (%d, %d) with sides of %d long and a total length of %d. "
+    printf("\nThe largest square was found at (%d, %d) with sides of %d long and a total length of %d. "
                    "This means that the final answer is: ",
            square.getStartingPoint().getX(),
            square.getStartingPoint().getY(),

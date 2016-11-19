@@ -9,7 +9,7 @@ class Path {
 
 private:
     Point startingPoint;
-    PrimalityTester  *primalityTester;
+    PrimalityTester *primalityTester;
     bool loop = false;
     bool square = false;
     int length = 0;
@@ -39,7 +39,7 @@ public:
 
     void setStartingPoint(const Point &startingPoint);
 
-    PrimalityTester * getPrimalityTester() const;
+    PrimalityTester *getPrimalityTester() const;
 
     void setPrimalityTester(PrimalityTester &primalityTester);
 
@@ -53,7 +53,7 @@ public:
 
     Path();
 
-    const bool operator < (const Path &path) const;
+    const bool operator<(const Path &path) const;
 };
 
 

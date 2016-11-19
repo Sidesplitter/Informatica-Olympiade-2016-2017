@@ -11,6 +11,7 @@ add_subdirectory(src/CCore)
 add_subdirectory(src/CPerformance)
 add_subdirectory(src/C1)
 add_subdirectory(src/C2)
+add_subdirectory(src/C3)
 add_subdirectory(src/C4)
 add_subdirectory(lib/googletest)
 

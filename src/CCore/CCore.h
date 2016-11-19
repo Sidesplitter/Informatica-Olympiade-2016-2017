@@ -3,6 +3,7 @@
 
 #include <thread>
 #include "Path.h"
+#include "Progress.h"
 
 class CCore {
 
@@ -18,23 +19,32 @@ private:
      */
     std::vector<Point> getGaussianPrimesChunk(
             std::tuple<int, int> range,
-            std::tuple<Point, Point> searchArea
+            std::tuple<Point, Point> searchArea,
+            Progress *progress = nullptr
     );
 
     std::vector<Path> getSquareChunk(
             std::tuple<int, int> range,
-            std::tuple<Point, Point> searchArea
+            std::tuple<Point, Point> searchArea,
+            Progress *progress = nullptr
     );
 
     Path getLargestSquareChunk(
             std::tuple<int, int> range,
-            std::tuple<Point, Point> searchArea
+            std::tuple<Point, Point> searchArea,
+            Progress *progress = nullptr
+    );
+
+    Path getLargestLoopChunk(
+            std::tuple<int, int> range,
+            std::tuple<Point, Point> searchArea,
+            Progress *progress = nullptr
     );
 
     /**
      * The amount of threads used with calculations
      */
-    int threads = std::thread::hardware_concurrency() != 0 ? std::thread::hardware_concurrency() : 1;
+    int threads;
 public:
     CCore();
 
@@ -43,34 +53,45 @@ public:
      * @param searchArea The first point should be the bottom left, the second point the top right
      * @return
      */
-    const std::vector<Point> getGaussianPrimes(const std::tuple<Point, Point> searchArea);
+    const std::vector<Point> getGaussianPrimes(const std::tuple<Point, Point> searchArea, Progress *progress = nullptr);
 
 
     /**
      * Return all the squares in the given area
      *
      * @param searchArea The first point should be the bottom left, the second point the top right
+     * @param progress
      * @return A vector containing all the paths that are a square in the given search area
      */
-    const std::vector<Path> getSquares(const std::tuple<Point, Point> searchArea);
+    const std::vector<Path> getSquares(const std::tuple<Point, Point> searchArea, Progress *progress = nullptr);
 
     /**
      * Returns the largest square in the given area
      *
      * @param searchAreaThe first point should be the bottom left, the second point the top right
+     * @param progress
      * @return The path that is the largest square in the given search area
      */
-    const Path getLargestSquare(const std::tuple<Point, Point> searchArea);
+    const Path getLargestSquare(const std::tuple<Point, Point> searchArea, Progress *progress = nullptr);
+
+    /**
+     * Returns the largest loop in the given area
+     *
+     * @param searchArea first point should be the bottom left, the second point the top right
+     * @param progress
+     * @return The path that is the largest square in the given search area
+     */
+    const Path getLargestLoop(const std::tuple<Point, Point> searchArea, Progress *progress = nullptr);
 
     /**
      * Checks if the given number is a prime or not a prime
      * @param number The number to check
+     * @param progress
      * @return True if the number is a prime, false if it is not
      */
     const bool isPrime(const uint32_t number);
 
-    PrimalityTester * getPrimalityTester() const;
-
+    PrimalityTester *getPrimalityTester() const;
 
     void setPrimalityTester(PrimalityTester *primalityTester);
 
