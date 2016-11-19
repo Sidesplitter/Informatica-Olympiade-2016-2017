@@ -1,4 +1,4 @@
-#!/bin/python
+#!/bin/python3.5
 import os
 import argparse
 import re
@@ -75,21 +75,47 @@ def remove_relative_imports(source):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Merge CCore and an exercise into a single file.')
-    parser.add_argument('-e', '--exercise', help='The exercise to use, possible values are: C1, C2, C3 and C4')
-    parser.add_argument('-f', '--file', help='The file to print to. If empty, output will be printed to stdout')
+
+    # Exercise
+    parser.add_argument(
+        '-e',
+        '--exercise',
+        help='The exercise to use, possible values are: C1, C2, C3 and C4',
+        required=False)
+
+    # File
+    parser.add_argument(
+        '-f',
+        '--file',
+        help='The file to print to. If empty, output will be printed to stdout',
+        required=False
+    )
+
+    # Human readable
+    parser.add_argument(
+        '--human',
+        action='store_true',
+        default=False,
+        help='Turns human messages on (Extra output). DOES CREATE INVALID OUTPUT FOR THE OLYMPIADE.',
+        required=False
+    )
 
     args = parser.parse_args()
 
     while not args.exercise:
-
         args.exercise = input('The exercise to use, possible values are: C1, C2, C3, C4: ')
 
     source = get_ccore() + get_exercise(args.exercise)
     source = remove_relative_imports(source)
 
-    if args.file:
-        with open(args.file, 'w') as f:
-            f.write(source)
-            f.close()
-    else:
-        print(source)
+    if args.human:
+        source = '#define HUMAN_MESSAGES\n' + source
+
+    while not args.file:
+        args.file = input('The file to write to: ')
+
+    with open(args.file, 'w') as f:
+        f.write(source)
+        f.close()
+
+    print('Done!')
