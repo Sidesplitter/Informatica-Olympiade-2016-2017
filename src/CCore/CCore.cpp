@@ -56,6 +56,11 @@ const std::vector<Path> CCore::getSquares(const std::tuple<Point, Point> searchA
     int amount = (int) (std::ceil(std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY()) /
                         this->getThreads());
 
+    if(progress != nullptr)
+    {
+        progress->start();
+    }
+
     for (int i = 0; i < this->getThreads(); i++) {
         std::tuple<int, int> range = std::make_tuple(
                 std::get<0>(searchArea).getY() + i * amount,
@@ -79,6 +84,11 @@ const std::vector<Path> CCore::getSquares(const std::tuple<Point, Point> searchA
         squares.insert(squares.end(), foundSquares.begin(), foundSquares.end());
     }
 
+    if(progress != nullptr)
+    {
+        progress->stop();
+    }
+
     return squares;
 }
 
@@ -89,6 +99,11 @@ const Path CCore::getLargestSquare(const std::tuple<Point, Point> searchArea, Pr
     std::vector<std::future<Path>> futures;
     int amount = (int) (std::ceil(std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY()) /
                         this->getThreads());
+
+    if(progress != nullptr)
+    {
+        progress->start();
+    }
 
     for (int i = 0; i < this->getThreads(); i++) {
         std::tuple<int, int> range = std::make_tuple(
@@ -111,6 +126,11 @@ const Path CCore::getLargestSquare(const std::tuple<Point, Point> searchArea, Pr
         Path square = futures[i].get();
 
         largestSquare = std::max(square, largestSquare);
+    }
+
+    if(progress != nullptr)
+    {
+        progress->stop();
     }
 
     return largestSquare;
@@ -269,6 +289,11 @@ const Path CCore::getLargestLoop(const std::tuple<Point, Point> searchArea, Prog
     int amount = (int) (std::ceil(std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY()) /
                         this->getThreads());
 
+    if(progress != nullptr)
+    {
+        progress->start();
+    }
+
     for (int i = 0; i < this->getThreads(); i++) {
         std::tuple<int, int> range = std::make_tuple(
                 std::get<0>(searchArea).getY() + i * amount,
@@ -291,6 +316,11 @@ const Path CCore::getLargestLoop(const std::tuple<Point, Point> searchArea, Prog
         Path square = futures[i].get();
 
         largestPath = std::max(square, largestPath);
+    }
+
+    if(progress != nullptr)
+    {
+        progress->stop();
     }
 
     return largestPath;

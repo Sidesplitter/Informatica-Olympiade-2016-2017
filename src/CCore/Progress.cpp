@@ -3,19 +3,12 @@
 #include <iostream>
 #include "Progress.h"
 
-Progress::Progress() {
-
-    this->startTime = std::chrono::system_clock::now();
-}
-
 void Progress::increaseProgress() {
 
     {
         std::unique_lock<std::mutex> lock(this->progressMutex);
         this->currentProgress++;
     }
-
-    draw();
 }
 
 void Progress::decreaseProgress() {
@@ -24,8 +17,6 @@ void Progress::decreaseProgress() {
         std::unique_lock<std::mutex> lock(this->progressMutex);
         this->currentProgress--;
     }
-
-    draw();
 }
 
 void Progress::setProgress(const int progress) {
@@ -34,8 +25,6 @@ void Progress::setProgress(const int progress) {
         std::unique_lock<std::mutex> lock(this->progressMutex);
         this->currentProgress = progress;
     }
-
-    draw();
 }
 
 int Progress::getProgress() {
@@ -97,8 +86,6 @@ void Progress::setMaxProgress(int maxProgress) {
         this->maxProgress = maxProgress;
 
     }
-
-    this->draw();
 }
 
 std::string Progress::formatETA(std::chrono::duration<double> eta) {
@@ -124,4 +111,41 @@ std::string Progress::formatETA(std::chrono::duration<double> eta) {
     out += std::to_string(seconds) + "s";
 
     return out;
+}
+
+void Progress::start() {
+
+    this->startTime = std::chrono::system_clock::now();
+    this->run = true;
+
+    //Draw the progress every second, but do it in a separate thread
+    this->drawThread = std::thread([this](){
+
+        while(true)
+        {
+            //Check whether we should still be running
+            {
+                std::unique_lock<std::mutex> lock(this->drawMutex);
+                if(!this->run)
+                {
+                    break;
+                }
+            }
+            this->draw();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    });
+}
+
+void Progress::stop() {
+
+    {
+        std::unique_lock<std::mutex> lock(this->drawMutex);
+        this->run = false;
+    }
+
+    this->drawThread.join();
+
+    //Draw it once more, to make sure it has at least been drawn once.
+    this->draw();
 }

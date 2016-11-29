@@ -7,14 +7,18 @@
 
 
 #include <mutex>
+#include <thread>
 
 class Progress {
 
 private:
-    int maxProgress;
-    int currentProgress;
+    int maxProgress = 0;
+    int currentProgress = 0;
     std::chrono::time_point<std::chrono::system_clock> startTime;
     std::mutex progressMutex;
+    std::thread drawThread;
+    std::mutex drawMutex;
+    bool run = false;
 
     void draw();
 
@@ -26,7 +30,16 @@ private:
     std::string formatETA(std::chrono::duration<double> eta);
 
 public:
-    Progress();
+
+    /**
+     * Start the printing of progress to std::cout. The progress is displayed once per second
+     */
+    void start();
+
+    /**
+     * Stop the printing of progress to std::cout
+     */
+    void stop();
 
     /**
      * Increase the progress by one. This method is threadsafe
