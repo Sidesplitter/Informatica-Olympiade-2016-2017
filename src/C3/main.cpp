@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../CCore/CCore.h"
+#include "../CCore/Exporter.h"
 
 int main() {
 
@@ -18,7 +19,6 @@ int main() {
     Point point2 = Point(x2, y2);
 
     CCore cCore = CCore();
-
     Progress *progress = nullptr;
 #ifdef HUMAN_MESSAGES
     progress = new Progress();

@@ -70,14 +70,15 @@ public:
 
     /**
      * Check if the number is a prime according to the Miller Rabin primality test. This method is more accurate
-     * than isFermatPrime but does take longer to calculate.
+     * than isFermatPrime but does take longer to calculate. If the given number is larger than 2 * 6000 ^ 2, it will
+     * throw an error.
      *
      * @see https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
      * @param number The number to check
      * @param precision The amount of checks we put on the given number.
      * @return True if the number is a prime, false if not.
      */
-    const bool isMillerRabinPrime(const uint32_t number, const int precision = 2) const;
+    const bool isMillerRabinPrime(const uint32_t number) const;
 
     /**
      * Check if a number is a prime according to Fermat's little theorem. This can return true for some numbers

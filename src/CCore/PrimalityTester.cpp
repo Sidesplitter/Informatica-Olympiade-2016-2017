@@ -1,4 +1,4 @@
-#include <random>
+#include <cmath>
 #include "PrimalityTester.h"
 
 bool PrimalityTester::isPrime(uint32_t number) {
@@ -44,7 +44,7 @@ bool PrimalityTester::isPrime(uint32_t number) {
     switch(this->getPrimalityMethod())
     {
         case FERMAT:
-            isPrime = this->isMillerRabinPrime(number);
+            isPrime = this->isFermatPrime(number);
             break;
         case MILLER_RABIN:
             isPrime = this->isMillerRabinPrime(number);
@@ -108,61 +108,68 @@ uint64_t pow_mod(uint64_t a, uint64_t x, uint64_t n)
     return r;
 }
 
-const bool PrimalityTester::isMillerRabinPrime(const uint32_t number, const int precision) const {
+const bool isMillerRabinComposite(uint64_t a, uint64_t d, uint64_t number, uint64_t s)
+{
+    uint64_t x = pow_mod(a, d, number);
+    uint64_t y;
 
-    if(number <= 3)
-    {
-        return true;
-    }
-
-    if(!(number & 1))
-    {
-        return false;
-    }
-
-    int d = number - 1;
-    int s = 0;
-
-    // Continue while D is even
-    while(d % 2 == 0)
-    {
-        d = d >> 1;
-        s++;
-    }
-
-    for(int i = 0; i < precision; i++)
-    {
-        int a = rand() % (number - 2) + 2;
-
-        uint64_t x = pow_mod((uint64_t) a, (uint64_t) d, (uint64_t) number);
-
-        if(x == 1 || x == number - 1)
-        {
-            continue;
-        }
-
-        for(int j = 0; j < s; j++)
-        {
-            x = pow_mod(x, 2, (uint64_t) number);
-
-            if(x == 1)
-            {
-                return false;
-            }
-
-            if(x == number - 1)
-            {
-                break;
-            }
-        }
-
-        if(x != number - 1) {
+    while (s) {
+        y = (x * x) % number;
+        if (y == 1 && x != 1 && x != number-1)
             return false;
-        }
+        x = y;
+        --s;
+    }
+
+    if (y != 1) {
+        return false;
     }
 
     return true;
 
+}
+
+const bool PrimalityTester::isMillerRabinPrime(const uint32_t number) const {
+
+    if (number <= 3) {
+        return true;
+    }
+
+    if (!(number & 1)) {
+        return false;
+    }
+
+    int d = number / 2;
+    int s = 1;
+
+    // Continue while D is even
+    while (!(d & 1)) {
+        d /= 2;
+        s++;
+    }
+
+    // Depending on how large the number is, we only need to test for specific numbers
+
+    if(number < 1373653) {
+        return isMillerRabinComposite(2, (uint64_t) d, number, (uint64_t) s) &&
+               isMillerRabinComposite(3, (uint64_t) d, number, (uint64_t) s);
+    }
+
+    if(number < 9080191) {
+        return isMillerRabinComposite(31, (uint64_t) d, number, (uint64_t) s) &&
+               isMillerRabinComposite(72, (uint64_t) d, number, (uint64_t) s);
+    }
+
+    if(number < 4759123141) {
+        return isMillerRabinComposite(2, (uint64_t) d, number, (uint64_t) s) &&
+               isMillerRabinComposite(7, (uint64_t) d, number, (uint64_t) s) &&
+               isMillerRabinComposite(61, (uint64_t) d, number, (uint64_t) s);
+
+    }
+
+    //The number is larger than 2 * 6000 ^ 2 (The result that (6000, 6000) gives
+    // => we do not need to calculate it anymore
+    throw new std::runtime_error("Number is larger than allowed (2*6000^2");
 }
 
 bool PrimalityTester::isGaussianPrime(int x, int y) {

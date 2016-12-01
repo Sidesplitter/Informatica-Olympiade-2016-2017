@@ -14,7 +14,9 @@ def get_src_path():
 
 def get_ccore():
     """
-    Get the CCore source code
+    Get the CCore source code.
+
+    The exporter is NOT included in this, as it has a large dependency on json.
     :return:
     """
     files = [
@@ -28,7 +30,7 @@ def get_ccore():
         'Progress.h',
         'Progress.cpp',
         'CCore.h',
-        'CCore.cpp'
+        'CCore.cpp',
     ]
 
     source = ''
