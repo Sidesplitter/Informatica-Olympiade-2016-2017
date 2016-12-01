@@ -27,9 +27,13 @@ int main() {
     Path path = cCore.getLargestLoop(std::make_tuple(point1, point2), progress);
 
 #ifdef HUMAN_MESSAGES
-    printf("\nThe largest path was found at (%d, %d) and has a length of ",
+   printf("The path starting at (%d, %d) does%s loop, has %lu points, is%s a square and has a length of ",
            path.getStartingPoint().getX(),
-           path.getStartingPoint().getY());
+           path.getStartingPoint().getY(),
+           path.isLoop() ? "" : " not",
+           path.getPoints().size(),
+           path.isSquare() ? "" : " not"
+    );
 #endif
     std::cout << path.getLength() << std::endl;
 

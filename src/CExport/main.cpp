@@ -6,9 +6,9 @@
 int main() {
 
 #ifdef HUMAN_MESSAGES
-    std::cout << "==== C2 ====" << std::endl
+    std::cout << "==== CExport ====" << std::endl
               << "This program will calculate the length of the path that starts on the given coordinates in the given "
-              << "search area." << std::endl
+              << "search area. It will output this path to the given file" << std::endl
               << "Please enter the search area (x1 x2 y1 y2): ";
 #endif
 
@@ -26,22 +26,33 @@ int main() {
 
     std::cin >> x >> y;
 
+    std::string filePath;
+#ifdef HUMAN_MESSAGES
+    std::cout << "Please enter the file path to export to: ";
+#endif
+    std::cin >> filePath;
+
+    //Do the calculations
     Point startingPoint = Point(x, y);
 
     Path path = Path(startingPoint, new PrimalityTester());
 
     path.calculatePath(std::make_tuple(point1, point2));
 
+    Exporter exporter;
+
+    exporter.exportPath(path, filePath);
 #ifdef HUMAN_MESSAGES
 
-    printf("The path starting at (%d, %d) does%s loop, has %lu points, is%s a square and has a length of ",
+    printf("The path starting at (%d, %d) does%s loop, has %lu points, is%s a square and has a length of %i.\n",
            x,
            y,
            path.isLoop() ? "" : " not",
            path.getPoints().size(),
-           path.isSquare() ? "" : " not"
+           path.isSquare() ? "" : " not",
+           path.getLength()
     );
-#endif
-    std::cout << path.getLength();
 
+    printf("Path is exported to %s.\n", filePath.c_str());
+#endif
 }

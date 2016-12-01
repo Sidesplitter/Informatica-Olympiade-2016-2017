@@ -7,13 +7,19 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 # the final product looks like, comment out the next line.
 add_definitions(-DHUMAN_MESSAGES)
 
+
+#Libraries
+add_subdirectory(lib/googletest)
+add_subdirectory(lib/json)
+
+#Project
 add_subdirectory(src/CCore)
 add_subdirectory(src/CPerformance)
+add_subdirectory(src/CExport)
 add_subdirectory(src/C1)
 add_subdirectory(src/C2)
 add_subdirectory(src/C3)
 add_subdirectory(src/C4)
-add_subdirectory(lib/googletest)
 
 
 # Tests

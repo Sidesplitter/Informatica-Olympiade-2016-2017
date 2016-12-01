@@ -148,4 +148,5 @@ void Progress::stop() {
 
     //Draw it once more, to make sure it has at least been drawn once.
     this->draw();
+    std::cout << "\n";
 }

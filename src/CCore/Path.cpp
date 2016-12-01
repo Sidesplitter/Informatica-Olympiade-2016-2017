@@ -9,8 +9,6 @@ void Path::calculatePath(std::tuple<Point, Point> searchArea, bool squareOptimiz
         return;
     }
 
-    // A list with all the found Gaussian points in this loop
-    std::vector<Point> points = {};
 
     // The length of a side (Only used when squareOptimization is true)
     int sideLength = 0;
@@ -24,7 +22,7 @@ void Path::calculatePath(std::tuple<Point, Point> searchArea, bool squareOptimiz
     point.setDirection(Direction::DOWN);
 
     //Continue till we have found the maximum amount of points
-    while (maximumPoints == 0 || points.size() < maximumPoints) {
+    while (maximumPoints == 0 || this->points.size() < maximumPoints) {
 
         //We are outside the X range
         if (point.getX() < std::get<0>(searchArea).getX() || point.getX() > std::get<1>(searchArea).getX()) {
@@ -39,20 +37,21 @@ void Path::calculatePath(std::tuple<Point, Point> searchArea, bool squareOptimiz
         if (this->primalityTester->isGaussianPrime(point)) {
 
             // Add the point to the list of points
-            points.push_back(point);
+            this->points.push_back(point);
 
             // We found a loop: The coordinates are equal and we are currently going down,
             // which means that we will turn right soon (and thus go into a loop)
-            if (points.size() > 1 && point == this->startingPoint && point.getDirection() == Direction::DOWN) {
+            if (this->points.size() > 1 && point == this->startingPoint && point.getDirection() == Direction::DOWN) {
                 this->loop = true;
 
                 // The loop is a square when it has five points (The first and the last point are added separately)
                 // and when the first two points have the same length as the second and the third point
-                if (points.size() == 5) {
-                    this->square = points[0].getDistance(points[1]) == points[1].getDistance(points[2]);
+                if (this->points.size() == 5) {
+                    this->square = this->points[0].getDistance(this->points[1]) ==
+                            this->points[1].getDistance(this->points[2]);
 
                     if (this->square) {
-                        this->sideLength = this->getLength() / 4;
+                        this->sideLength = length / 4;
                     }
                 }
 
@@ -63,8 +62,8 @@ void Path::calculatePath(std::tuple<Point, Point> searchArea, bool squareOptimiz
             if (squareOptimization) {
                 // We no exactly one side, if this side is smaller than the minimal length we can stop.
                 // We can also determine the length of a a side
-                if (points.size() == 2) {
-                    sideLength = points[0].getDistance(point);
+                if (this->points.size() == 2) {
+                    sideLength = this->points[0].getDistance(point);
 
                     // The length of the side is smaller than the requirement
                     if (sideLength < minimalLength) {
@@ -83,16 +82,16 @@ void Path::calculatePath(std::tuple<Point, Point> searchArea, bool squareOptimiz
                 }
 
                     // We have more than two sides, that means that we can compare the sides with eachother
-                else if (points.size() > 2) {
+                else if (this->points.size() > 2) {
                     // If the length of the last point to the previous point is not the
                     // Length of one of our sides, it is not a square
-                    if (points[points.size() - 1].getDistance(points[points.size() - 2]) != sideLength) {
+                    if (this->points[this->points.size() - 1].getDistance(points[points.size() - 2]) != sideLength) {
                         break;
                     }
                 }
 
                 // We have more points than a square should have
-                if (points.size() >= 5) {
+                if (this->points.size() >= 5) {
                     break;
                 }
             }
@@ -182,4 +181,8 @@ const bool Path::operator<(const Path &path) const {
 
 int Path::getSideLength() const {
     return sideLength;
+}
+
+const std::vector<Point> &Path::getPoints() const {
+    return points;
 }

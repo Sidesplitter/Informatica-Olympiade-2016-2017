@@ -14,6 +14,7 @@ private:
     bool square = false;
     int length = 0;
     int sideLength = 0;
+    std::vector<Point> points;
 
 public:
 
@@ -50,6 +51,8 @@ public:
     int getLength() const;
 
     int getSideLength() const;
+
+    const std::vector<Point> &getPoints() const;
 
     Path();
 
