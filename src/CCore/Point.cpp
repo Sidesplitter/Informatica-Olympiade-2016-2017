@@ -1,7 +1,7 @@
 #include <cmath>
 #include "Point.h"
 
-const Point Point::translate(const Direction direction, const int length) {
+Point Point::translate(const Direction direction, const int length)const {
 
     int x = getX();
     int y= getY();
@@ -69,7 +69,7 @@ const int Point::getDistance(const Point point) const {
     //is by just doing |x1 - x2| - |y1 - y2|, this saves us some calculation time
     if(this->getX() == point.getX() || this->getY() == point.getY())
     {
-        return abs(this->getX() - point.getX()) + abs(this->getY() - point.getY());
+        return std::abs(this->getX() - point.getX()) + abs(this->getY() - point.getY());
     }else{
 
         return std::hypot(this->getX() - point.getX(), this->getY() - point.getY());
@@ -78,3 +78,17 @@ const int Point::getDistance(const Point point) const {
 }
 
 Point::Point() {}
+
+
+void Point::setX(int x) {
+    Point::x = x;
+}
+
+void Point::setY(int y) {
+    Point::y = y;
+}
+
+std::ostream &operator<<(std::ostream &os, const Point &point) {
+    os << "(" << point.x << ", " << point.y << ", " << point.direction << ")";
+    return os;
+}

@@ -2,10 +2,11 @@
 #define INFORMATICA_OLYMPIADE_2016_2017_TESTS_POINT_H
 
 #include <tuple>
+#include <ostream>
 #include "Directions.h"
 
 class Point {
-private:
+protected:
     int x;
     int y;
     Direction direction;
@@ -17,6 +18,8 @@ public:
 
     Point();
 
+    friend std::ostream &operator<<(std::ostream &os, const Point &point);
+
     /**
      * Create a new point that is translated relative to this point.
      *
@@ -24,11 +27,15 @@ public:
      * @param length
      * @return
      */
-    const Point translate(const Direction direction, const int length = 1);
+    Point translate(const Direction direction, const int length = 1)const;
 
     const int getX() const;
 
     const int getY() const;
+
+    void setX(int x);
+
+    void setY(int y);
 
     const bool operator==(const Point &other) const;
 

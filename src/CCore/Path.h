@@ -7,7 +7,7 @@
 
 class Path {
 
-private:
+protected:
     Point startingPoint;
     PrimalityTester *primalityTester;
     bool loop = false;

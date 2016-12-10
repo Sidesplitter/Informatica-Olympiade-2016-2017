@@ -176,6 +176,9 @@ bool PrimalityTester::isGaussianPrime(int x, int y) {
 
     if(x == 0)
     {
+        //Abs this so that it also works for negative numbers
+        y = (int) std::abs(y);
+
         if(y % 4 != 3)
         {
             return false;
@@ -186,6 +189,9 @@ bool PrimalityTester::isGaussianPrime(int x, int y) {
 
     if(y == 0)
     {
+        //Abs this so that it also works for negative numbers
+        x = (int) std::abs(x);
+
         if(x % 4 != 3)
         {
             return false;
