@@ -1,11 +1,21 @@
 #include <iostream>
+#ifdef MULTI_THREADING
+#include <thread>
 #include <future>
+#endif
 #include <cmath>
 #include "CCore.h"
 
 const std::vector<Point> CCore::getGaussianPrimes(const std::tuple<Point, Point> searchArea, Progress *progress) {
 
-
+#ifndef MULTI_THREADING
+    // Single threaded mode, ignore complex code
+    return this->getGaussianPrimesChunk(
+            std::make_tuple(std::get<0>(searchArea).getY(), std::get<1>(searchArea).getY()),
+            searchArea,
+            progress
+    );
+#else
     std::vector<std::future<std::vector<Point>>> futures;
 
     if (progress != nullptr) {
@@ -46,10 +56,19 @@ const std::vector<Point> CCore::getGaussianPrimes(const std::tuple<Point, Point>
     }
 
     return points;
+#endif
 }
 
 const std::vector<Path> CCore::getSquares(const std::tuple<Point, Point> searchArea, Progress *progress) {
 
+#ifndef MULTI_THREADING
+    // Single threaded mode, ignore complex code
+    return this->getSquareChunk(
+            std::make_tuple(std::get<0>(searchArea).getY(), std::get<1>(searchArea).getY()),
+            searchArea,
+            progress
+    );
+#else
     std::vector<Path> squares = {};
 
     std::vector<std::future<std::vector<Path>>> futures;
@@ -90,10 +109,19 @@ const std::vector<Path> CCore::getSquares(const std::tuple<Point, Point> searchA
     }
 
     return squares;
+#endif
 }
 
 const Path CCore::getLargestSquare(const std::tuple<Point, Point> searchArea, Progress *progress) {
 
+#ifndef MULTI_THREADING
+    // Single threaded mode, ignore complex code
+    return this->getLargestSquareChunk(
+            std::make_tuple(std::get<0>(searchArea).getY(), std::get<1>(searchArea).getY()),
+            searchArea,
+            progress
+    );
+#else
     Path largestSquare = Path();
 
     std::vector<std::future<Path>> futures;
@@ -134,6 +162,7 @@ const Path CCore::getLargestSquare(const std::tuple<Point, Point> searchArea, Pr
     }
 
     return largestSquare;
+#endif
 }
 
 PrimalityTester *CCore::getPrimalityTester() const {
@@ -152,13 +181,20 @@ const bool CCore::isPrime(const uint32_t number) {
 CCore::CCore() {
     this->primalityTester = new PrimalityTester();
 
-#ifdef HUMAN_MESSAGES
-    if (std::thread::hardware_concurrency() == 0) {
-        std::cout << "WARNING: Could not determine the amount of cores, running in single core mode." << std::endl;
-    }
-#endif
+#ifndef MULTI_THREADING
+    this->threads = 1;
+#else
+    #ifdef HUMAN_MESSAGES
+        if (std::thread::hardware_concurrency() == 0) {
+            std::cout << "WARNING: Could not determine the amount of cores, running in single threaded mode."
+                      << std::endl;
+        }
+    #endif
 
     this->threads = std::thread::hardware_concurrency() != 0 ? std::thread::hardware_concurrency() : 1;
+#endif
+
+    this->getPrimalityTester()->useCache(this->threads == 1);
 }
 
 std::vector<Point> CCore::getGaussianPrimesChunk(std::tuple<int, int> range,
@@ -176,10 +212,12 @@ std::vector<Point> CCore::getGaussianPrimesChunk(std::tuple<int, int> range,
             points.push_back(Point(x, y));
         }
 
+#ifdef MULTI_THREADING
         if (progress != nullptr) {
 
             std::async(std::launch::async, &Progress::increaseProgress, progress);
         }
+#endif
     }
 
     return points;
@@ -205,10 +243,11 @@ CCore::getSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searc
             squares.push_back(path);
         }
 
+#ifdef MULTI_THREADING
         if (progress != nullptr) {
-
             std::async(std::launch::async, &Progress::increaseProgress, progress);
         }
+#endif
 
 
     }
@@ -235,11 +274,12 @@ Path CCore::getLargestSquareChunk(std::tuple<int, int> range, std::tuple<Point, 
         if (path.isSquare()) {
             largestSquare = std::max(largestSquare, path);
         }
-
+#ifdef MULTI_THREADING
         if (progress != nullptr) {
 
             std::async(std::launch::async, &Progress::increaseProgress, progress);
         }
+#endif
     }
 
     return largestSquare;
@@ -272,10 +312,12 @@ Path CCore::getLargestLoopChunk(std::tuple<int, int> range, std::tuple<Point, Po
             largestPath = std::max(largestPath, path);
         }
 
+#ifdef MULTI_THREADING
         if (progress != nullptr) {
 
             std::async(std::launch::async, &Progress::increaseProgress, progress);
         }
+#endif
     }
 
     return largestPath;
@@ -283,6 +325,13 @@ Path CCore::getLargestLoopChunk(std::tuple<int, int> range, std::tuple<Point, Po
 
 const Path CCore::getLargestLoop(const std::tuple<Point, Point> searchArea, Progress *progress) {
 
+#ifndef MULTI_THREADING
+    return this->getLargestLoopChunk(
+            std::make_tuple(std::get<0>(searchArea).getY(), std::get<1>(searchArea).getY()),
+            searchArea,
+            progress
+    );
+#else
     Path largestPath = Path();
 
     std::vector<std::future<Path>> futures;
@@ -324,5 +373,6 @@ const Path CCore::getLargestLoop(const std::tuple<Point, Point> searchArea, Prog
     }
 
     return largestPath;
+#endif
 }
 

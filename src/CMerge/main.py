@@ -102,10 +102,19 @@ if __name__ == '__main__':
         required=False
     )
 
+    # Human readable
+    parser.add_argument(
+        '--multi_threaded',
+        action='store_true',
+        default=False,
+        help='Turns on multi threaded processing for the CCore library. DOES NOT WORK BY DEFAULT FOR THE OLYMPIADE',
+        required=False
+    )
+
     args = parser.parse_args()
 
     while not args.exercise:
-        args.exercise = input('The exercise to use, possible values are: C1, C2, C3, C4: ')
+        args.exercise = input('The exercise to use, possible values are: C1, C2, C3, C4: ').lower()
 
     source = get_ccore() + get_exercise(args.exercise)
     source = remove_relative_imports(source)
@@ -113,8 +122,11 @@ if __name__ == '__main__':
     if args.human:
         source = '#define HUMAN_MESSAGES\n' + source
 
+    if args.multi_threaded:
+        source = '#define MULTI_THREADING\n' + source
+
     while not args.file:
-        args.file = input('The file to write to: ')
+        args.file = input('The file to write to ({}.cpp): '.format(args.exercise)) or args.exercise + '.cpp'
 
     with open(args.file, 'w') as f:
         f.write(source)

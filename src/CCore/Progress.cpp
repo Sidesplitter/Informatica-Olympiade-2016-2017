@@ -115,6 +115,7 @@ std::string Progress::formatETA(std::chrono::duration<double> eta) {
 
 void Progress::start() {
 
+#ifdef MULTI_THREADING
     this->startTime = std::chrono::system_clock::now();
     this->run = true;
 
@@ -135,6 +136,7 @@ void Progress::start() {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     });
+#endif
 }
 
 void Progress::stop() {

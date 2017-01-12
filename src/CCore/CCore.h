@@ -1,7 +1,6 @@
 #ifndef INFORMATICA_OLYMPIADE_2016_2017_TESTS_CCORE_H
 #define INFORMATICA_OLYMPIADE_2016_2017_TESTS_CCORE_H
 
-#include <thread>
 #include "Path.h"
 #include "Progress.h"
 

@@ -1,5 +1,6 @@
 #include <time.h>
 #include <stdio.h>
+#include <iostream>
 
 #include "../CCore/CCore.h"
 
@@ -128,8 +129,14 @@ void runTests(bool cache)
         printf("\tMiller Rabin: %.0fs\n", runLargestSquare(PrimalityTester::MILLER_RABIN, cache, threads));
     }
 }
+
 int main()
 {
+#ifndef MULTI_THREADING
+
+    std::cerr << "CPerformance must be built with multi threading on" << std::endl;
+    throw std::exception();
+#endif
     printf("===== Without Cache =====\n");
     runTests(false);
 

@@ -1,6 +1,8 @@
 #ifndef INFORMATICA_OLYMPIADE_2016_2017_TESTS_DIRECTION_H
 #define INFORMATICA_OLYMPIADE_2016_2017_TESTS_DIRECTION_H
 
+#include <ostream>
+
 enum class Direction {
     UP,
     RIGHT,

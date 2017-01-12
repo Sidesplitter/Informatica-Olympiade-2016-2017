@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
 # Adds HUMAN_MESSAGES to the preprocessor
@@ -9,6 +9,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 option(HUMAN_MESSAGES "Print ouput other than the required output. Turn this off when handing in." ON)
 if(HUMAN_MESSAGES)
     add_definitions(-DHUMAN_MESSAGES)
+endif()
+
+option(MULTI_THREADING "Enable multithreading support." ON)
+if(MULTI_THREADING)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    add_definitions(-DMULTI_THREADING)
 endif()
 
 #Output directory
@@ -25,7 +31,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}")
 #Libraries
 add_subdirectory(lib/googletest)
 add_subdirectory(lib/json)
-#add_subdirectory(lib/SDL-mirror)
 
 #C-Exercises related projects
 add_subdirectory(src/CCore)
