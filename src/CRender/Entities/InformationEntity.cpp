@@ -7,7 +7,7 @@
 
 InformationEntity::InformationEntity(CRender *cRender) : Entity(cRender) {
 
-    if(!this->font.loadFromFile("FreeMono.ttf"))
+    if(!this->font.loadFromFile("Assets/FreeMono.ttf"))
     {
         throw std::runtime_error("Could not load font!");
     }

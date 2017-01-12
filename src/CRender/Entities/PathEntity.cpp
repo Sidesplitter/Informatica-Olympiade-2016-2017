@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include <math.h>
+#include <cmath>
 #include "PathEntity.h"
 #include "../CRender.h"
 #include "../Renderer.h"
@@ -48,7 +48,14 @@ void PathEntity::render() {
             float y = (point.getY() + prevPoint.getY()) / 2;
 
 
-            sf::CircleShape directionTriangle(radius, 3);
+            // Create a triangle to show the direction of the line
+
+            sf::ConvexShape directionTriangle;
+            directionTriangle.setPointCount(3);
+            directionTriangle.setPoint(0, sf::Vector2f(0, 0));
+            directionTriangle.setPoint(1, sf::Vector2f(1, 0));
+            directionTriangle.setPoint(2, sf::Vector2f(0.5, 1.5));
+
             directionTriangle.setFillColor(sf::Color::Red);
             directionTriangle.setPosition(sf::Vector2f(x, y));
 

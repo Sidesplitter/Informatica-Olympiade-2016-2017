@@ -18,7 +18,7 @@ target_link_libraries(Informatica_Olympiade_2016_2017_CRender Informatica_Olympi
 #Copy assets
 add_custom_command(
         TARGET Informatica_Olympiade_2016_2017_CRender POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${CMAKE_SOURCE_DIR}/src/CRender/Assets/
-                ${CMAKE_CURRENT_BINARY_DIR}/Asset)
+                $<TARGET_FILE_DIR:Informatica_Olympiade_2016_2017_CRender>/Assets)
 
