@@ -5,12 +5,12 @@ project(Informatica_Olympiade_2016_2017_CRender)
 set(SOURCE_FILES main.cpp Renderer.cpp Renderer.h CRender.cpp CRender.h Entities/Entity.h Entities/PointsEntity.cpp Entities/PointsEntity.h InputHandler.cpp InputHandler.h Entities/PathEntity.cpp Entities/PathEntity.h Entities/InformationEntity.cpp Entities/InformationEntity.h)
 add_executable(Informatica_Olympiade_2016_2017_CRender ${SOURCE_FILES})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 #SFML
-find_package(SFML REQUIRED graphics window system)
-include_directories(${SFML_INCLUDE_DIRS})
-target_link_libraries(Informatica_Olympiade_2016_2017_CRender ${SFML_LIBRARIES})
+target_link_libraries(Informatica_Olympiade_2016_2017_CRender sfml-window)
+target_link_libraries(Informatica_Olympiade_2016_2017_CRender sfml-graphics)
+target_link_libraries(Informatica_Olympiade_2016_2017_CRender sfml-system)
 
 #CCore
 target_link_libraries(Informatica_Olympiade_2016_2017_CRender Informatica_Olympiade_2016_2017_CCore)

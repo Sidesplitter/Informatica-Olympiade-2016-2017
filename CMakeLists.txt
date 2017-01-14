@@ -23,14 +23,19 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 #Dependencies
-include(conanbuildinfo.cmake)
-conan_basic_setup()
+#include(conanbuildinfo.cmake)
+#conan_basic_setup()
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/lib/sfml/cmake/Modules")
 
 #Libraries
+# GoogleTest
 add_subdirectory(lib/googletest)
-add_subdirectory(lib/json)
+# SFML
+include_directories(lib/sfml/include)
+add_subdirectory(lib/sfml)
+# JSON
+add_subdirectory(lib/json )
 
 #C-Exercises related projects
 add_subdirectory(src/CCore)

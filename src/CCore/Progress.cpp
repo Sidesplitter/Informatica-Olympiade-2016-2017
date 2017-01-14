@@ -115,8 +115,8 @@ std::string Progress::formatETA(std::chrono::duration<double> eta) {
 
 void Progress::start() {
 
-#ifdef MULTI_THREADING
     this->startTime = std::chrono::system_clock::now();
+#ifdef MULTI_THREADING
     this->run = true;
 
     //Draw the progress every second, but do it in a separate thread
