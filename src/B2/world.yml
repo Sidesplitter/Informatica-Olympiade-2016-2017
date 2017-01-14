@@ -1,0 +1,52 @@
+info:
+  width: 19
+  height: 13
+
+data: [
+  # Each coordinate has a gap between itself and the next one
+  # So when you have [1, 2], it gets interpreted as [1, 0, 2]
+  # This is because of the way the map is specified in the documentation.
+  # All of the vertical rows have an offset of +1 since they are never on the same row as the vertical coordinates
+
+  #First row
+  # Horizontal
+  [27, 26, 27, 23, 18, 10, 17, 12, 22],
+  # Vertical
+  [16, 16, 17, 18, 24, 26, 11, 18, 27, 16],
+
+  #Second row
+  # Horizontal
+  [27, 22, 18, 24, 12, 12, 12, 18, 12],
+  # Vertical
+  [25, 19, 10, 14, 18, 12, 24, 12, 23, 19],
+
+  #Third row
+  # Horizontal
+  [26, 11, 12, 28, 11, 10, 22 ,12 ,15],
+  # Vertical
+  [11, 14, 24, 19, 29, 12, 11, 14 ,24, 19],
+
+  #Fourth row
+  # Horizontal
+  [11, 21, 21, 29, 13, 11, 26, 13, 15],
+  # Vertical
+  [15, 26, 25, 28, 26, 20, 10, 15, 12, 22],
+
+  #Fifth row
+  # Horizontal
+  [14, 14, 28, 25, 23, 15, 28, 27, 19],
+  # Vertical
+  [11, 15, 17, 24, 23, 14, 17, 23, 23, 13],
+
+  #Sixth row
+  # Horizontal
+  [29, 27, 17, 14, 23, 17, 25, 14, 21],
+  # Vertical
+  [11, 11, 20, 18, 25, 15, 11, 14, 26, 16],
+
+  #Seventh row
+  # Horizontal
+  [17, 27, 17, 27, 19, 11, 29, 28, 28]
+  # The last row does not have a vertical row
+  # This brings the total amount of rows to n*2-1
+]
