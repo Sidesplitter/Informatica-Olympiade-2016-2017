@@ -1,0 +1,29 @@
+info:
+  # The total amount of horizontal cells
+  width: 25
+
+  #The total amount of vertical cells
+  height: 24
+
+data:
+  # Each row represents a [X, Y] pair where something is present
+  - [0,   0]
+  - [20,  3]
+  - [3,   4]
+  - [3,   5]
+  - [1,   6]
+  - [12,  6]
+  - [15,  6]
+  - [5,   7]
+  - [21,  8]
+  - [18,  10]
+  - [20,  11]
+  - [13,  13]
+  - [12,  14]
+  - [8,   15]
+  - [24,  17]
+  - [2,   20]
+  - [1,   21]
+  - [14,  21]
+  - [24,  22]
+  - [0,   23]
