@@ -1,6 +1,7 @@
 #include <iostream>
 #include "../CCore/CCore.h"
 
+
 int main() {
 
 #ifdef HUMAN_MESSAGES

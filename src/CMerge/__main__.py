@@ -4,15 +4,20 @@ import argparse
 import re
 
 
-def get_src_path():
+def get_src_path() -> str:
     """
     Get the source directory
     :return:
     """
-    return os.path.abspath('../')
+    path = os.path.abspath('../')
+
+    if path.split('/')[-1] != 'src':
+        path = os.path.abspath(os.path.join('.', 'src'))
+
+    return path
 
 
-def get_ccore():
+def get_ccore() -> str:
     """
     Get the CCore source code.
 
@@ -45,7 +50,7 @@ def get_ccore():
     return source
 
 
-def get_exercise(name):
+def get_exercise(name: str) -> str:
     """
     Get the source for a single exercise
     :param name:
@@ -65,7 +70,7 @@ def get_exercise(name):
     return source
 
 
-def remove_relative_imports(source):
+def remove_relative_imports(source) -> str:
     """
     Remove all the relative imports from the source code
     :param source:
@@ -74,27 +79,22 @@ def remove_relative_imports(source):
     return re.sub(r"^#include \"(.+)\"$", "", source, flags=re.MULTILINE)
 
 
-if __name__ == '__main__':
+def main():
 
-    parser = argparse.ArgumentParser(description='Merge CCore and an exercise into a single file.')
+    parser = argparse.ArgumentParser(description='Merge CCore and an exercise into a single file. Prints the output to'
+                                                 'stdout')
 
     # Exercise
     parser.add_argument(
-        '-e',
-        '--exercise',
+        'exercise',
         help='The exercise to use, possible values are: C1, C2, C3 and C4',
-        required=False)
-
-    # File
-    parser.add_argument(
-        '-f',
-        '--file',
-        help='The file to print to. If empty, output will be printed to stdout',
-        required=False
+        type=lambda value: value.upper(),
+        choices=['C1', 'C2', 'C3', 'C4']
     )
 
     # Human readable
     parser.add_argument(
+        '-hm',
         '--human',
         action='store_true',
         default=False,
@@ -104,7 +104,8 @@ if __name__ == '__main__':
 
     # Human readable
     parser.add_argument(
-        '--multi_threaded',
+        '-mt',
+        '--multi-threaded',
         action='store_true',
         default=False,
         help='Turns on multi threaded processing for the CCore library. DOES NOT WORK BY DEFAULT FOR THE OLYMPIADE',
@@ -112,9 +113,6 @@ if __name__ == '__main__':
     )
 
     args = parser.parse_args()
-
-    while not args.exercise:
-        args.exercise = input('The exercise to use, possible values are: C1, C2, C3, C4: ').lower()
 
     source = get_ccore() + get_exercise(args.exercise)
     source = remove_relative_imports(source)
@@ -125,11 +123,22 @@ if __name__ == '__main__':
     if args.multi_threaded:
         source = '#define MULTI_THREADING\n' + source
 
-    while not args.file:
-        args.file = input('The file to write to ({}.cpp): '.format(args.exercise)) or args.exercise + '.cpp'
+    source = '/**\n' \
+             ' * (C) Jord Nijhuis 2017\n\n' \
+             ' * This is the merged source of CCore and {exercise}.\n' \
+             ' * This code is merged with multi-threading option {multi_threading}.\n' \
+             ' * A faster processor does improve the performance regardless of multi-threading.\n' \
+             ' * The Human option was turned {human}.\n'\
+             ' */\n\n'.format(
+                exercise=args.exercise,
+                multi_threading='ON, meaning that multiple cores improve the performance' if args.multi_threaded else
+                'OFF',
+                human='ON, this will generate additional output, but does mark the exercise as\n * invalid for the grader'
+                if args.human else 'OFF'
+            ) + source
 
-    with open(args.file, 'w') as f:
-        f.write(source)
-        f.close()
+    print(source)
 
-    print('Done!')
+
+if __name__ == '__main__':
+    main()
