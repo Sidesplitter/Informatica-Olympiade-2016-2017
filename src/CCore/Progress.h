@@ -19,6 +19,7 @@ private:
     std::thread drawThread;
     std::mutex drawMutex;
     bool run = false;
+    std::string previousProgress = std::string("");
 
     void draw();
 

@@ -60,15 +60,22 @@ std::chrono::duration<double> Progress::getEta() {
 }
 void Progress::draw() {
 
+    std::ostringstream output;
+    output << this->getProgress() << "/" << this->getMaxProgress() << ", "
+           << this->getCurrentProgressPercentage() << "%, "
+           << "ETA: " << this->formatETA(this->getEta());
 
-    printf("\r%i/%i, %.2f%%, ETA: %s",
-           this->getProgress(),
-           this->getMaxProgress(),
-           this->getCurrentProgressPercentage(),
-           this->formatETA(this->getEta()).c_str()
-    );
+    std::cout << "\r" << output.str();
 
-    fflush(stdout);
+    // If the new progress message is shorter than the old one, it might happen that a part of the message remains on
+    // the screen. To fix this, a simple universal solution is to fill the part that will not be overwritten with blanks
+    unsigned long diff = this->previousProgress.length() - output.str().length();
+    if(diff < 0){
+        std::cout << std::string(" ", diff);
+    }
+
+    this->previousProgress = output.str();
+    std::cout.flush();
 }
 
 int Progress::getMaxProgress() {
