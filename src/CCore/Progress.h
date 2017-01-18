@@ -45,12 +45,12 @@ public:
     /**
      * Increase the progress by one. This method is threadsafe
      */
-    void increaseProgress();
+    void increaseProgress(const int amount = 1);
 
     /**
      * Decrease the progress by one. This method is threadsafe
      */
-    void decreaseProgress();
+    void decreaseProgress(const int amount = 1);
 
     /**
      * Set the progress. This method is threadsafe.

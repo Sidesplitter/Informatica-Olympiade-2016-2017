@@ -34,6 +34,8 @@ def get_ccore() -> str:
         'Path.cpp',
         'Progress.h',
         'Progress.cpp',
+        'WorkDivider.h',
+        'WorkDivider.cpp',
         'CCore.h',
         'CCore.cpp',
     ]

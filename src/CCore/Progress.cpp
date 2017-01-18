@@ -3,19 +3,19 @@
 #include <iostream>
 #include "Progress.h"
 
-void Progress::increaseProgress() {
+void Progress::increaseProgress(const int amount) {
 
     {
         std::unique_lock<std::mutex> lock(this->progressMutex);
-        this->currentProgress++;
+        this->currentProgress += amount;
     }
 }
 
-void Progress::decreaseProgress() {
+void Progress::decreaseProgress(const int amount) {
 
     {
         std::unique_lock<std::mutex> lock(this->progressMutex);
-        this->currentProgress--;
+        this->currentProgress -= amount;
     }
 }
 
@@ -49,9 +49,14 @@ float Progress::getCurrentProgressPercentage() {
 std::chrono::duration<double> Progress::getEta() {
 
     {
-        int currentProgress =  this->currentProgress != 0 ? this->currentProgress : 1;
-
         std::unique_lock<std::mutex> lock(this->progressMutex);
+
+        if(currentProgress == 0)
+        {
+            return std::chrono::duration<double>(0);
+        }
+
+        int currentProgress =  this->currentProgress != 0 ? this->currentProgress : 1;
 
         // Time taken per line * amount of lines left
         return ((std::chrono::system_clock::now() - this->startTime) / currentProgress *

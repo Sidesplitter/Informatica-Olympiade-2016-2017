@@ -5,6 +5,8 @@
 #endif
 #include <cmath>
 #include "CCore.h"
+#include "WorkDivider.h"
+#include <algorithm>
 
 const std::vector<Point> CCore::getGaussianPrimes(const std::tuple<Point, Point> searchArea, Progress *progress) {
 
@@ -21,28 +23,33 @@ const std::vector<Point> CCore::getGaussianPrimes(const std::tuple<Point, Point>
     if (progress != nullptr) {
         progress->setMaxProgress(
                 progress->getMaxProgress() + std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY());
+
+        progress->start();
     }
 
-    // The amount of rows that each thread is going to do
-    // ceil(Total rows / amount of threads)
-    int amount = (int) (std::ceil(std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY()) /
-                        this->getThreads());
+    WorkDivider * divider = new WorkDivider(searchArea);
+    //If the range is relatively small, not all of our threads are being put to work
+    //To fix this, we divide the amount of work by the amount of threads, but only if it is lower than the default
+    //value.
+    divider->setBatchSize(std::min(
+            divider->getBatchSize(),
+            (std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY()) / this->getThreads()
+    ));
 
-    // Put the threads to work
     for (int i = 0; i < this->getThreads(); i++) {
-        std::tuple<int, int> range = std::make_tuple(
-                std::get<0>(searchArea).getY() + i * amount,
-                std::get<0>(searchArea).getY() + (i + 1) * amount
-        );
 
         futures.push_back(
-                std::async(std::launch::async, std::bind(
-                        &CCore::getGaussianPrimesChunk,
-                        this,
-                        range,
-                        searchArea,
-                        progress
-                ))
+                std::async(std::launch::async, [this, divider, searchArea, progress](){
+
+                    std::vector<Point> points = {};
+
+                    while(!divider->isFinished()){
+                        auto foundPoints = this->getGaussianPrimesChunk(divider->getNextBatch(), searchArea, progress);
+                        points.insert(points.end(), foundPoints.begin(), foundPoints.end());
+                    }
+
+                    return points;
+                })
         );
     }
 
@@ -53,6 +60,11 @@ const std::vector<Point> CCore::getGaussianPrimes(const std::tuple<Point, Point>
         std::vector<Point> foundPoints = futures[i].get();
 
         points.insert(points.end(), foundPoints.begin(), foundPoints.end());
+    }
+
+    if (progress != nullptr) {
+
+        progress->stop();
     }
 
     return points;
@@ -69,33 +81,41 @@ const std::vector<Path> CCore::getSquares(const std::tuple<Point, Point> searchA
             progress
     );
 #else
-    std::vector<Path> squares = {};
 
     std::vector<std::future<std::vector<Path>>> futures;
-    int amount = (int) (std::ceil(std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY()) /
-                        this->getThreads());
 
     if(progress != nullptr)
     {
         progress->start();
     }
 
+    WorkDivider * divider = new WorkDivider(searchArea);
+    //If the range is relatively small, not all of our threads are being put to work
+    //To fix this, we divide the amount of work by the amount of threads, but only if it is lower than the default
+    //value.
+    divider->setBatchSize(std::min(
+            divider->getBatchSize(),
+            (std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY()) / this->getThreads()
+    ));
+
     for (int i = 0; i < this->getThreads(); i++) {
-        std::tuple<int, int> range = std::make_tuple(
-                std::get<0>(searchArea).getY() + i * amount,
-                std::get<0>(searchArea).getY() + (i + 1) * amount
-        );
 
         futures.push_back(
-                std::async(std::launch::async, std::bind(
-                        &CCore::getSquareChunk,
-                        this,
-                        range,
-                        searchArea,
-                        progress
-                ))
+                std::async(std::launch::async, [this, divider, searchArea, progress](){
+
+                    std::vector<Path> squares = {};
+
+                    while(!divider->isFinished()){
+                        auto foundSquares = this->getSquareChunk(divider->getNextBatch(), searchArea, progress);
+                        squares.insert(squares.end(), foundSquares.begin(), foundSquares.end());
+                    }
+
+                    return squares;
+                })
         );
     }
+
+    std::vector<Path> squares = {};
 
     for (int i = 0; i < futures.size(); i++) {
         std::vector<Path> foundSquares = futures[i].get();
@@ -122,33 +142,44 @@ const Path CCore::getLargestSquare(const std::tuple<Point, Point> searchArea, Pr
             progress
     );
 #else
-    Path largestSquare = Path();
 
     std::vector<std::future<Path>> futures;
-    int amount = (int) (std::ceil(std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY()) /
-                        this->getThreads());
 
     if(progress != nullptr)
     {
+        progress->setMaxProgress(std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY());
         progress->start();
     }
 
+    WorkDivider * divider = new WorkDivider(searchArea);
+    //If the range is relatively small, not all of our threads are being put to work
+    //To fix this, we divide the amount of work by the amount of threads, but only if it is lower than the default
+    //value.
+    divider->setBatchSize(std::min(
+            divider->getBatchSize(),
+            (std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY()) / this->getThreads()
+    ));
+
     for (int i = 0; i < this->getThreads(); i++) {
-        std::tuple<int, int> range = std::make_tuple(
-                std::get<0>(searchArea).getY() + i * amount,
-                std::get<0>(searchArea).getY() + (i + 1) * amount
-        );
 
         futures.push_back(
-                std::async(std::launch::async, std::bind(
-                        &CCore::getLargestSquareChunk,
-                        this,
-                        range,
-                        searchArea,
-                        progress
-                ))
+                std::async(std::launch::async, [this, divider, searchArea, progress](){
+
+                    Path square;
+
+                    while(!divider->isFinished()){
+                        square = std::max(
+                                square,
+                                this->getLargestSquareChunk(divider->getNextBatch(), searchArea, progress)
+                        );
+                    }
+
+                    return square;
+                })
         );
     }
+
+    Path largestSquare = Path();
 
     for (int i = 0; i < futures.size(); i++) {
         Path square = futures[i].get();
@@ -215,7 +246,7 @@ std::vector<Point> CCore::getGaussianPrimesChunk(std::tuple<int, int> range,
 #ifdef MULTI_THREADING
         if (progress != nullptr) {
 
-            std::async(std::launch::async, &Progress::increaseProgress, progress);
+            std::async(std::launch::async, &Progress::increaseProgress, progress, 1);
         }
 #endif
     }
@@ -227,7 +258,8 @@ std::vector<Path>
 CCore::getSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searchArea, Progress *progress) {
 
     std::vector<Point> primes = this->getGaussianPrimesChunk(range, searchArea);
-
+    std::vector<int> passedY = {};
+    
     if (progress != nullptr) {
         progress->setMaxProgress(progress->getMaxProgress() + (int) primes.size());
     }
@@ -235,7 +267,8 @@ CCore::getSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searc
     std::vector<Path> squares = {};
 
     for (std::vector<Point>::iterator iterator = primes.begin(); iterator != primes.end(); iterator++) {
-        Path path = Path(*iterator, this->primalityTester);
+        Point prime = *iterator;
+        Path path = Path(prime, this->primalityTester);
 
         path.calculatePath(searchArea, true);
 
@@ -245,11 +278,13 @@ CCore::getSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searc
 
 #ifdef MULTI_THREADING
         if (progress != nullptr) {
-            std::async(std::launch::async, &Progress::increaseProgress, progress);
+
+            if(std::find(passedY.begin(), passedY.end(), prime.getY()) == passedY.end()){
+                std::async(std::launch::async, &Progress::increaseProgress, progress, 1);
+                passedY.push_back(prime.getY());
+            }
         }
 #endif
-
-
     }
 
     return squares;
@@ -258,28 +293,29 @@ CCore::getSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searc
 Path CCore::getLargestSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searchArea, Progress *progress) {
 
     std::vector<Point> primes = this->getGaussianPrimesChunk(range, searchArea);
-
-    if (progress != nullptr) {
-
-        progress->setMaxProgress(progress->getMaxProgress() + (int) primes.size());
-    }
-
+    std::vector<int> passedY = {};
     Path largestSquare = Path();
 
     for (std::vector<Point>::iterator iterator = primes.begin(); iterator != primes.end(); iterator++) {
-        Path path = Path(*iterator, this->primalityTester);
+        Point prime = *iterator;
+        Path path = Path(prime, this->primalityTester);
 
         path.calculatePath(searchArea, true, largestSquare.getSideLength());
 
         if (path.isSquare()) {
             largestSquare = std::max(largestSquare, path);
         }
-#ifdef MULTI_THREADING
+        
+        #ifdef MULTI_THREADING
         if (progress != nullptr) {
 
-            std::async(std::launch::async, &Progress::increaseProgress, progress);
+            if(std::find(passedY.begin(), passedY.end(), prime.getY()) == passedY.end()){
+                std::async(std::launch::async, &Progress::increaseProgress, progress, 1);
+                passedY.push_back(prime.getY());
+            }
         }
-#endif
+        #endif
+        
     }
 
     return largestSquare;
@@ -296,14 +332,14 @@ void CCore::setThreads(int threads) {
 Path CCore::getLargestLoopChunk(std::tuple<int, int> range, std::tuple<Point, Point> searchArea, Progress *progress) {
 
     std::vector<Point> primes = this->getGaussianPrimesChunk(range, searchArea);
-
-    if (progress != nullptr) {
-        progress->setMaxProgress(progress->getMaxProgress() + (int) primes.size());
-    }
+    std::vector<int> passedY = {};
 
     Path largestPath = Path();
 
     for (std::vector<Point>::iterator iterator = primes.begin(); iterator != primes.end(); iterator++) {
+
+        Point prime = *iterator;
+
         Path path = Path(*iterator, this->primalityTester);
 
         path.calculatePath(searchArea);
@@ -315,11 +351,14 @@ Path CCore::getLargestLoopChunk(std::tuple<int, int> range, std::tuple<Point, Po
 #ifdef MULTI_THREADING
         if (progress != nullptr) {
 
-            std::async(std::launch::async, &Progress::increaseProgress, progress);
+            if(std::find(passedY.begin(), passedY.end(), prime.getY()) == passedY.end()){
+                std::async(std::launch::async, &Progress::increaseProgress, progress, 1);
+                passedY.push_back(prime.getY());
+            }
         }
 #endif
     }
-
+    
     return largestPath;
 }
 
@@ -332,33 +371,44 @@ const Path CCore::getLargestLoop(const std::tuple<Point, Point> searchArea, Prog
             progress
     );
 #else
-    Path largestPath = Path();
 
     std::vector<std::future<Path>> futures;
-    int amount = (int) (std::ceil(std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY()) /
-                        this->getThreads());
 
     if(progress != nullptr)
     {
+        progress->setMaxProgress(std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY());
         progress->start();
     }
 
+    WorkDivider * divider = new WorkDivider(searchArea);
+    //If the range is relatively small, not all of our threads are being put to work
+    //To fix this, we divide the amount of work by the amount of threads, but only if it is lower than the default
+    //value.
+    divider->setBatchSize(std::min(
+            divider->getBatchSize(),
+            (std::get<1>(searchArea).getY() - std::get<0>(searchArea).getY()) / this->getThreads()
+    ));
+
     for (int i = 0; i < this->getThreads(); i++) {
-        std::tuple<int, int> range = std::make_tuple(
-                std::get<0>(searchArea).getY() + i * amount,
-                std::get<0>(searchArea).getY() + (i + 1) * amount
-        );
 
         futures.push_back(
-                std::async(std::launch::async, std::bind(
-                        &CCore::getLargestLoopChunk,
-                        this,
-                        range,
-                        searchArea,
-                        progress
-                ))
+                std::async(std::launch::async, [this, divider, searchArea, progress](){
+
+                    Path largestPath;
+
+                    while(!divider->isFinished()){
+                        largestPath = std::max(
+                                largestPath,
+                                this->getLargestLoopChunk(divider->getNextBatch(), searchArea, progress)
+                        );
+                    }
+
+                    return largestPath;
+                })
         );
     }
+
+    Path largestPath = Path();
 
     //Get the results from all the chunks and retrieve the largest
     for (int i = 0; i < futures.size(); i++) {
