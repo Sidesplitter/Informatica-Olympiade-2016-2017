@@ -127,15 +127,19 @@ def main():
 
     source = '/**\n' \
              ' * (C) Jord Nijhuis 2017\n\n' \
-             ' * This is the merged source of CCore and {exercise}.\n' \
+             ' * This is the merged source of CCore and {exercise}. The language is C++11\n' \
              ' * This code is merged with multi-threading option {multi_threading}.\n' \
              ' * A faster processor does improve the performance regardless of multi-threading.\n' \
              ' * The Human option was turned {human}.\n'\
              ' */\n\n'.format(
                 exercise=args.exercise,
-                multi_threading='ON, meaning that multiple cores improve the performance' if args.multi_threaded else
+                multi_threading='ON, meaning that multiple cores improve the performance.\n'
+                ' * Make sure that when compile this file, std::async is available'
+                ' (for g++ add -pthread to the arguments)'
+                if args.multi_threaded else
                 'OFF',
-                human='ON, this will generate additional output, but does mark the exercise as\n * invalid for the grader'
+                human='ON, this will generate additional output, but does mark the exercise as\n '
+                      '* invalid for the grader.'
                 if args.human else 'OFF'
             ) + source
 

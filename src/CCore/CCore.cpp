@@ -27,7 +27,11 @@ const std::vector<Point> CCore::getGaussianPrimes(const std::tuple<Point, Point>
         progress->start();
     }
 
-    WorkDivider * divider = new WorkDivider(searchArea);
+    std::shared_ptr<WorkDivider> divider = std::make_shared<WorkDivider>(std::make_tuple<int, int>(
+            std::get<0>(searchArea).getY(),
+            std::get<1>(searchArea).getY()
+    ));
+
     //If the range is relatively small, not all of our threads are being put to work
     //To fix this, we divide the amount of work by the amount of threads, but only if it is lower than the default
     //value.
@@ -89,7 +93,11 @@ const std::vector<Path> CCore::getSquares(const std::tuple<Point, Point> searchA
         progress->start();
     }
 
-    WorkDivider * divider = new WorkDivider(searchArea);
+    std::shared_ptr<WorkDivider> divider = std::make_shared<WorkDivider>(std::make_tuple<int, int>(
+            std::get<0>(searchArea).getY(),
+            std::get<1>(searchArea).getY()
+    ));
+
     //If the range is relatively small, not all of our threads are being put to work
     //To fix this, we divide the amount of work by the amount of threads, but only if it is lower than the default
     //value.
@@ -151,7 +159,11 @@ const Path CCore::getLargestSquare(const std::tuple<Point, Point> searchArea, Pr
         progress->start();
     }
 
-    WorkDivider * divider = new WorkDivider(searchArea);
+    std::shared_ptr<WorkDivider> divider = std::make_shared<WorkDivider>(std::make_tuple<int, int>(
+            std::get<0>(searchArea).getY(),
+            std::get<1>(searchArea).getY()
+    ));
+
     //If the range is relatively small, not all of our threads are being put to work
     //To fix this, we divide the amount of work by the amount of threads, but only if it is lower than the default
     //value.
@@ -258,8 +270,8 @@ std::vector<Path>
 CCore::getSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searchArea, Progress *progress) {
 
     std::vector<Point> primes = this->getGaussianPrimesChunk(range, searchArea);
-    std::vector<int> passedY = {};
-    
+    int lastY = std::get<0>(range) - 1;
+
     if (progress != nullptr) {
         progress->setMaxProgress(progress->getMaxProgress() + (int) primes.size());
     }
@@ -277,12 +289,10 @@ CCore::getSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searc
         }
 
 #ifdef MULTI_THREADING
-        if (progress != nullptr) {
+        if (progress != nullptr && lastY != prime.getY()) {
 
-            if(std::find(passedY.begin(), passedY.end(), prime.getY()) == passedY.end()){
-                std::async(std::launch::async, &Progress::increaseProgress, progress, 1);
-                passedY.push_back(prime.getY());
-            }
+            std::async(std::launch::async, &Progress::increaseProgress, progress, std::max(0, prime.getY() - lastY));
+            lastY = std::max(lastY, prime.getY());
         }
 #endif
     }
@@ -293,7 +303,10 @@ CCore::getSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searc
 Path CCore::getLargestSquareChunk(std::tuple<int, int> range, std::tuple<Point, Point> searchArea, Progress *progress) {
 
     std::vector<Point> primes = this->getGaussianPrimesChunk(range, searchArea);
-    std::vector<int> passedY = {};
+    // This variable decides whether we should update the progress counter,
+    // Since the progress counter is per Y-coordinate, and that the prime numbers are ordered, we can just increase the
+    // counter every time we discover a new row.
+    int lastY = std::get<0>(range) - 1;
     Path largestSquare = Path();
 
     for (std::vector<Point>::iterator iterator = primes.begin(); iterator != primes.end(); iterator++) {
@@ -305,17 +318,15 @@ Path CCore::getLargestSquareChunk(std::tuple<int, int> range, std::tuple<Point, 
         if (path.isSquare()) {
             largestSquare = std::max(largestSquare, path);
         }
-        
-        #ifdef MULTI_THREADING
-        if (progress != nullptr) {
 
-            if(std::find(passedY.begin(), passedY.end(), prime.getY()) == passedY.end()){
-                std::async(std::launch::async, &Progress::increaseProgress, progress, 1);
-                passedY.push_back(prime.getY());
-            }
+        #ifdef MULTI_THREADING
+        if (progress != nullptr && prime.getY() != lastY) {
+
+            std::async(std::launch::async, &Progress::increaseProgress, progress, std::max(0, prime.getY() - lastY));
+            lastY = std::max(lastY, prime.getY());
         }
         #endif
-        
+
     }
 
     return largestSquare;
@@ -332,8 +343,10 @@ void CCore::setThreads(int threads) {
 Path CCore::getLargestLoopChunk(std::tuple<int, int> range, std::tuple<Point, Point> searchArea, Progress *progress) {
 
     std::vector<Point> primes = this->getGaussianPrimesChunk(range, searchArea);
-    std::vector<int> passedY = {};
-
+    // This variable decides whether we should update the progress counter,
+    // Since the progress counter is per Y-coordinate, and that the prime numbers are ordered, we can just increase the
+    // counter every time we discover a new row.
+    int lastY = std::get<0>(range) - 1;
     Path largestPath = Path();
 
     for (std::vector<Point>::iterator iterator = primes.begin(); iterator != primes.end(); iterator++) {
@@ -349,16 +362,14 @@ Path CCore::getLargestLoopChunk(std::tuple<int, int> range, std::tuple<Point, Po
         }
 
 #ifdef MULTI_THREADING
-        if (progress != nullptr) {
+        if (progress != nullptr && prime.getY() != lastY) {
 
-            if(std::find(passedY.begin(), passedY.end(), prime.getY()) == passedY.end()){
-                std::async(std::launch::async, &Progress::increaseProgress, progress, 1);
-                passedY.push_back(prime.getY());
-            }
+            std::async(std::launch::async, &Progress::increaseProgress, progress, std::max(0, prime.getY() - lastY));
+            lastY = std::max(lastY, prime.getY());
         }
 #endif
     }
-    
+
     return largestPath;
 }
 
@@ -380,7 +391,11 @@ const Path CCore::getLargestLoop(const std::tuple<Point, Point> searchArea, Prog
         progress->start();
     }
 
-    WorkDivider * divider = new WorkDivider(searchArea);
+    std::shared_ptr<WorkDivider> divider = std::make_shared<WorkDivider>(std::make_tuple<int, int>(
+            std::get<0>(searchArea).getY(),
+            std::get<1>(searchArea).getY()
+    ));
+
     //If the range is relatively small, not all of our threads are being put to work
     //To fix this, we divide the amount of work by the amount of threads, but only if it is lower than the default
     //value.

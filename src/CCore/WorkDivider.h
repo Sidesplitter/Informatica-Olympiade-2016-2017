@@ -7,7 +7,7 @@
 class WorkDivider {
 
 private:
-    std::tuple<Point, Point> work;
+    std::tuple<int, int> work;
 
     int batchSize;
 
@@ -17,7 +17,7 @@ private:
     std::mutex batchMutex;
 
 public:
-    WorkDivider(std::tuple<Point, Point> work, int batchSize=500);
+    WorkDivider(std::tuple<int, int> work, int batchSize=500);
 
     /**
      * Get the next batch of work
@@ -35,7 +35,7 @@ public:
      * Get all the work that we have to do
      * @return
      */
-    std::tuple<Point, Point> getWork() const;
+    std::tuple<int, int> getWork() const;
 
     /**
      * Get the size of a single batch

@@ -1,8 +1,8 @@
 #include "WorkDivider.h"
 
-WorkDivider::WorkDivider(std::tuple<Point, Point> work, int batchSize) : work(work), batchSize(batchSize) {}
+WorkDivider::WorkDivider(std::tuple<int, int> work, int batchSize) : work(work), batchSize(batchSize) {}
 
-std::tuple<Point, Point> WorkDivider::getWork() const {
+std::tuple<int, int> WorkDivider::getWork() const {
     return work;
 }
 
@@ -25,14 +25,14 @@ std::tuple<int, int> WorkDivider::getNextBatch() {
     int nextBatch = this->getLastBatch() + 1;
     this->setLastBatch(nextBatch);
     return std::make_tuple(
-                std::get<0>(work).getY() + (nextBatch - 1) * getBatchSize(),
-                std::min(std::get<0>(work).getY() + nextBatch * getBatchSize(), std::get<1>(work).getY())
+                std::get<0>(work) + (nextBatch - 1) * getBatchSize(),
+                std::min(std::get<0>(work) + nextBatch * getBatchSize(), std::get<1>(work))
     );
 }
 
 bool WorkDivider::isFinished() {
 
-    return std::get<0>(work).getY() + this->getLastBatch() * getBatchSize() >= std::get<1>(work).getY();
+    return std::get<0>(work) + this->getLastBatch() * getBatchSize() >= std::get<1>(work);
 }
 
 void WorkDivider::setBatchSize(int batchSize) {

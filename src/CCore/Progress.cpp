@@ -66,6 +66,7 @@ std::chrono::duration<double> Progress::getEta() {
 void Progress::draw() {
 
     std::ostringstream output;
+    output.precision(4);
     output << this->getProgress() << "/" << this->getMaxProgress() << ", "
            << this->getCurrentProgressPercentage() << "%, "
            << "ETA: " << this->formatETA(this->getEta());

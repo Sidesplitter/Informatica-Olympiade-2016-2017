@@ -34,6 +34,8 @@ int main() {
            path.getPoints().size(),
            path.isSquare() ? "" : " not"
     );
+    
+    delete progress;
 #endif
     std::cout << path.getLength() << std::endl;
 

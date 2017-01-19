@@ -32,7 +32,10 @@ int main() {
            square.getStartingPoint().getX(),
            square.getStartingPoint().getY(),
            square.getLength() / 4,
-           square.getLength());
+           square.getLength()
+    );
+    
+    delete progress;
 #endif
     std::cout << square.getStartingPoint().getX() + square.getStartingPoint().getY() << std::endl;
 
