@@ -22,8 +22,9 @@ CRender::CRender() : renderer(renderer) {
 
     this->renderer->getEntities().push_back(new InformationEntity(this));
     //TODO don't hardcode this
-    auto path = Path(Point(174, 89), this->getCCore().getPrimalityTester());
-    path.calculatePath(std::make_tuple(Point(0, 0), Point(1000, 1000)));
+    auto path = Path(Point(2660, 3063), this->getCCore().getPrimalityTester());
+    path.calculatePath(std::make_tuple(Point(0, 0), Point(6000, 6000)));
+    this->renderer->getMainView().setCenter(2660, 3063);
     this->renderer->getEntities().push_back(new PathEntity(this, path));
 }
 
