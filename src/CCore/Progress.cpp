@@ -71,15 +71,12 @@ void Progress::draw() {
            << this->getCurrentProgressPercentage() << "%, "
            << "ETA: " << this->formatETA(this->getEta());
 
-    std::cout << "\r" << output.str();
-
-    // If the new progress message is shorter than the old one, it might happen that a part of the message remains on
-    // the screen. To fix this, a simple universal solution is to fill the part that will not be overwritten with blanks
-    unsigned long diff = this->previousProgress.length() - output.str().length();
-    if(diff < 0){
-        std::cout << std::string(" ", diff);
+    // Clear the previous line, to make sure that leftover characters are still on the line.
+    for (int i = 0; i < this->previousProgress.length(); i++) {
+        std::cout << "\b \b";
     }
 
+    std::cout << "\r" << output.str();
     this->previousProgress = output.str();
     std::cout.flush();
 }
@@ -129,6 +126,7 @@ std::string Progress::formatETA(std::chrono::duration<double> eta) {
 void Progress::start() {
 
     this->startTime = std::chrono::system_clock::now();
+    this->previousProgress = "";
 #ifdef MULTI_THREADING
     this->run = true;
 
