@@ -8,7 +8,7 @@ def remove_vowels(string=''):
     :param string: The input to remove vowels from
     :return: The given string without vowels
     """
-    return re.sub('a|e|i|o|u', '', string, flags=re.IGNORECASE)
+    return re.sub('a|e|i|o|u|y', '', string, flags=re.IGNORECASE)
 
 
 def main():
