@@ -29,8 +29,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/lib/sfml/cmake/Modules")
 
 #Libraries
-# GoogleTest
-add_subdirectory(lib/googletest)
 # SFML
 include_directories(lib/sfml/include)
 add_subdirectory(lib/sfml)
@@ -48,16 +46,3 @@ add_subdirectory(src/C1)
 add_subdirectory(src/C2)
 add_subdirectory(src/C3)
 add_subdirectory(src/C4)
-
-
-# Tests
-#project(Informatica_Olympiade_2016_2017_Tests)
-#set(TEST_SOURCE_FILES test/main.cpp test/CCore/PrimalityTesterTest.cpp test/CCore/PathTest.cpp)
-
-
-#include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-
-#add_executable(Informatica_Olympiade_2016_2017_Tests ${TEST_SOURCE_FILES} src/CCore/CCore.cpp src/CCore/CCore.h src/CCore/PrimalityTester.cpp src/CCore/PrimalityTester.h src/CCore/Point.cpp src/CCore/Point.h src/CCore/Path.cpp src/CCore/Path.h src/CCore/Directions.h)
-#include_directories(src)
-#target_link_libraries(Informatica_Olympiade_2016_2017_Tests gtest gtest_main Informatica_Olympiade_2016_2017_CCore)
-#add_test(runUnitTests runUnitTests)
